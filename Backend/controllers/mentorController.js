@@ -175,13 +175,32 @@ exports.getMentees = async (req, res) => {
     .populate('studentId', 'name domain college')
     .sort({ createdAt: -1 });
 
-    // Format the response
-    const mentees = approvedRequests.map(req => ({
-      _id: req._id,
-      studentId: req.studentId._id,
-      studentName: req.studentId.name,
-      domain: req.studentId.domain,
-      college: req.studentId.college
+    // Get additional information for each mentee
+    const mentees = await Promise.all(approvedRequests.map(async (req) => {
+      // Find student's team
+      const team = await Team.findOne({
+        members: req.studentId._id,
+        mentor: mentorId,
+        isActive: true
+      })
+      .populate('eventId', 'name host')
+      .populate('members', 'name')
+      .lean();
+
+      // Filter out the current student from teammates
+      const teammates = team?.members?.filter(member => 
+        member._id.toString() !== req.studentId._id.toString()
+      ) || [];
+
+      return {
+        _id: req._id,
+        studentId: req.studentId._id,
+        studentName: req.studentId.name,
+        domain: req.studentId.domain,
+        college: req.studentId.college,
+        event: team?.eventId || null,
+        teammates: teammates
+      };
     }));
 
     res.json(mentees);

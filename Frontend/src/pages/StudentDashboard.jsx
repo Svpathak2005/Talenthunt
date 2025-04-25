@@ -199,6 +199,41 @@ const StudentDashboard = () => {
             Student Dashboard
           </h1>
           <p className="text-gray-600 mt-2">Welcome back, {user?.name}</p>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Registered Events Card */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Registered Events</p>
+                  <h3 className="text-3xl font-bold text-gray-900 mt-1">{registeredEvents.length}</h3>
+                </div>
+                <div className="bg-blue-100 rounded-full p-3">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Events you have registered for</p>
+            </div>
+
+            {/* Available Events Card */}
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 border border-green-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-600">Available Events</p>
+                  <h3 className="text-3xl font-bold text-gray-900 mt-1">{events.length}</h3>
+                </div>
+                <div className="bg-green-100 rounded-full p-3">
+                  <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Total events available</p>
+            </div>
+          </div>
         </div>
 
         {/* Upcoming Competitions */}

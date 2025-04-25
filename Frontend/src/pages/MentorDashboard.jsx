@@ -34,9 +34,32 @@ const MentorDashboard = () => {
 
   const handleApprove = async (requestId) => {
     try {
-      await approveMentorRequest(token, requestId);
-      await fetchData(); // Refresh all data
-      alert("Request approved successfully!");
+      // Add loading state
+      const requestCard = document.getElementById(requestId);
+      if (requestCard) {
+        requestCard.classList.add('opacity-50', 'pointer-events-none');
+      }
+
+      const response = await approveMentorRequest(token, requestId);
+      if (response.success) {
+        await fetchData(); // Refresh all data
+        // Show success message with animation
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 opacity-0';
+        notification.textContent = 'Request approved successfully!';
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.remove('opacity-0'), 100);
+        
+        // Remove after delay
+        setTimeout(() => {
+          notification.classList.add('opacity-0');
+          setTimeout(() => notification.remove(), 500);
+        }, 3000);
+      } else {
+        throw new Error(response.message || 'Failed to approve request');
+      }
     } catch (error) {
       console.error("Error approving request:", error);
       alert(error.message || "Failed to approve request");
@@ -89,12 +112,50 @@ const MentorDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Header */}
+        {/* Header Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-50">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Mentor Dashboard
           </h1>
           <p className="text-gray-600 mt-2">Welcome back, {user?.name}</p>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Total Mentees Card */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Total Mentees</p>
+                  <h3 className="text-3xl font-bold text-gray-900 mt-1">{mentees.length}</h3>
+                </div>
+                <div className="bg-blue-100 rounded-full p-3">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Students under your mentorship</p>
+            </div>
+
+            {/* Events Mentored Card */}
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 border border-green-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-green-600">Events Mentored</p>
+                  <h3 className="text-3xl font-bold text-gray-900 mt-1">
+                    {/* Get unique count of events from mentees */}
+                    {[...new Set(mentees.map(mentee => mentee.eventId))].length}
+                  </h3>
+                </div>
+                <div className="bg-green-100 rounded-full p-3">
+                  <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Events you are mentoring</p>
+            </div>
+          </div>
         </div>
 
         {/* Pending Requests Section */}
@@ -108,7 +169,7 @@ const MentorDashboard = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {requests.map((request) => (
-              <div key={request._id} className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
+              <div key={request._id} id={request._id} className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">Student Introduction</h3>
@@ -154,6 +215,29 @@ const MentorDashboard = () => {
                     <h3 className="text-lg font-semibold text-gray-800">{mentee.studentName}</h3>
                     <p className="text-gray-600 mt-1">Domain: {mentee.domain}</p>
                     <p className="text-gray-600">College: {mentee.college}</p>
+                    {mentee.event && (
+                      <div className="mt-3 p-2 bg-blue-50 rounded-lg">
+                        <p className="text-sm font-medium text-blue-700">
+                          Event: {mentee.event.name}
+                        </p>
+                        <p className="text-sm text-blue-600">
+                          Host: {mentee.event.host}
+                        </p>
+                      </div>
+                    )}
+                    {mentee.teammates && mentee.teammates.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-sm font-medium text-gray-700 mb-2">Team Members:</p>
+                        <div className="space-y-1">
+                          {mentee.teammates.map((teammate, idx) => (
+                            <div key={idx} className="flex items-center space-x-2">
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                              <span className="text-sm text-gray-600">{teammate.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => {
