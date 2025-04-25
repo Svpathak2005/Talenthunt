@@ -8,8 +8,13 @@ import {
   getRegisteredEvents,
   getTeamRequests,
   approveTeamRequest,
-  getTeammates
+  getTeammates,
+  getMentorsByDomain,
+  sendMentorRequest,
+  getMentorFeedback,
+  submitFeedbackResponse
 } from "../api/api";
+import MentorCard from "../components/MentorCard";
 
 const StudentDashboard = () => {
   const [events, setEvents] = useState([]);
@@ -28,6 +33,9 @@ const StudentDashboard = () => {
     studyYear: "",
     endYear: "",
   });
+  const [mentors, setMentors] = useState([]);
+  const [feedbackList, setFeedbackList] = useState([]);
+  const [feedbackResponses, setFeedbackResponses] = useState({});
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -53,6 +61,14 @@ const StudentDashboard = () => {
         
         const teammatesData = await getTeammates(token);
         setTeammates(teammatesData);
+
+        // Fetch mentors in the same domain
+        const mentorsData = await getMentorsByDomain(token);
+        setMentors(mentorsData);
+        
+        // Fetch mentor feedback
+        const feedbackData = await getMentorFeedback(token);
+        setFeedbackList(feedbackData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -138,6 +154,39 @@ const StudentDashboard = () => {
     } catch (error) {
       console.error("Error processing team request:", error);
       alert("Failed to process team request. Please try again.");
+    }
+  };
+
+  const handleMentorRequest = async (mentorId, introduction) => {
+    try {
+      const result = await sendMentorRequest(token, mentorId, introduction);
+      if (result.success) {
+        alert("Mentor request sent successfully!");
+      } else {
+        alert(result.message || "Failed to send mentor request");
+      }
+    } catch (error) {
+      console.error("Error sending mentor request:", error);
+      alert(error.message || "Failed to send mentor request. Please try again.");
+    }
+  };
+
+  const handleFeedbackResponse = async (feedbackId, response) => {
+    try {
+      await submitFeedbackResponse(token, feedbackId, response);
+      // Refresh feedback after submitting response
+      const updatedFeedback = await getMentorFeedback(token);
+      setFeedbackList(updatedFeedback);
+      // Clear response from temporary state
+      setFeedbackResponses(prev => {
+        const newState = { ...prev };
+        delete newState[feedbackId];
+        return newState;
+      });
+      alert("Response submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting feedback response:", error);
+      alert("Failed to submit response");
     }
   };
 
@@ -420,9 +469,9 @@ const StudentDashboard = () => {
               </div>
             ) : (
               <div className="grid gap-4">
-                {teammates.map((teammate) => (
+                {teammates.map((teammate, index) => (
                   <div
-                    key={teammate._id}
+                    key={`${teammate.teamId}-${teammate.user._id}-${index}`}
                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
@@ -514,10 +563,82 @@ const StudentDashboard = () => {
             </table>
           </div>
         </section>
+
+        {/* Mentor Section */}
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-blue-50">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+            <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Available Mentors
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mentors.map((mentor) => (
+              <MentorCard
+                key={mentor._id}
+                mentor={mentor}
+                onSendRequest={handleMentorRequest}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Feedback Section */}
+        <section className="bg-white rounded-2xl shadow-lg p-8 border border-blue-50">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+            <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+            Mentor Feedback
+          </h2>
+          <div className="space-y-6">
+            {Array.isArray(feedbackList) && feedbackList.map((item) => (
+              <div key={item._id} className="bg-gray-50 rounded-lg p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <p className="text-gray-800 font-medium">{item.mentorName}</p>
+                    <p className="text-gray-600 mt-1">{item.feedback}</p>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                {!item.studentReply && (
+                  <div className="mt-4">
+                    <textarea
+                      placeholder="Write your response..."
+                      className="w-full p-2 border rounded-lg"
+                      rows="3"
+                      onChange={(e) => setFeedbackResponses(prev => ({
+                        ...prev,
+                        [item._id]: e.target.value
+                      }))}
+                    />
+                    <button
+                      onClick={() => handleFeedbackResponse(item._id, feedbackResponses[item._id])}
+                      className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Send Response
+                    </button>
+                  </div>
+                )}
+                {item.studentReply && (
+                  <div className="mt-4 bg-white p-4 rounded-lg">
+                    <p className="text-sm text-gray-500">Your response:</p>
+                    <p className="text-gray-800 mt-1">{item.studentReply}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+            {(!Array.isArray(feedbackList) || feedbackList.length === 0) && (
+              <p className="text-center text-gray-500">No feedback received yet</p>
+            )}
+          </div>
+        </section>
       </div>
 
       {/* CSS for 3D card flip animation */}
-      <style jsx>{`
+      <style>{`
         .perspective {
           perspective: 2000px;
         }

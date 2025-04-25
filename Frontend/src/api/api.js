@@ -81,6 +81,56 @@ export const getTeammates = async (token) => {
   }).then((res) => res.json());
 };
 
+// Get mentors by domain
+export const getMentorsByDomain = async (token) => {
+  return fetch(`${API_BASE}/student/mentors-by-domain`, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  }).then((res) => res.json());
+};
+
+// Send mentor request
+export const sendMentorRequest = async (token, mentorId, introduction) => {
+  const response = await fetch(`${API_BASE}/student/mentor-request`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({ mentorId, introduction }),
+  });
+
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to send mentor request');
+  }
+  
+  return data;
+};
+
+// Get mentor feedback
+export const getMentorFeedback = async (token) => {
+  return fetch(`${API_BASE}/student/mentor-feedback`, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  }).then((res) => res.json());
+};
+
+// Submit feedback response
+export const submitFeedbackResponse = async (token, feedbackId, response) => {
+  return fetch(`${API_BASE}/student/feedback-response`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({ feedbackId, response }),
+  }).then((res) => res.json());
+};
+
 // Mentor APIs
 export const getMentorRequests = async (token) => {
   return fetch(`${API_BASE}/mentor/requests`, {
@@ -88,24 +138,43 @@ export const getMentorRequests = async (token) => {
   }).then((res) => res.json());
 };
 
-export const approveMentorRequest = async (token, teamId) => {
+export const approveMentorRequest = async (token, requestId) => {
   return fetch(`${API_BASE}/mentor/approve`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
-    body: JSON.stringify({ teamId }),
+    body: JSON.stringify({ requestId }),
   }).then((res) => res.json());
 };
 
-export const giveFeedback = async (token, teamId, feedback) => {
-  return fetch(`${API_BASE}/mentor/feedback`, {
+export const getTeamFeedback = async (token) => {
+  return fetch(`${API_BASE}/mentor/feedbacks`, {
+    headers: { Authorization: "Bearer " + token },
+  }).then((res) => res.json());
+};
+
+export const giveFeedback = async (token, studentId, feedback) => {
+  const response = await fetch(`${API_BASE}/mentor/feedback`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token,
     },
-    body: JSON.stringify({ teamId, feedback }),
+    body: JSON.stringify({ studentId, feedback }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to submit feedback');
+  }
+
+  return response.json();
+};
+
+// Get approved mentees for the mentor
+export const getMentees = async (token) => {
+  return fetch(`${API_BASE}/mentor/mentees`, {
+    headers: { Authorization: "Bearer " + token },
   }).then((res) => res.json());
 };

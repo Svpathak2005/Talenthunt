@@ -4,7 +4,9 @@ const User = require('../models/User');
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
 const Team = require('../models/Team');
-const TeamRequest = require('../models/TeamRequest'); // Create this model (code below)
+const TeamRequest = require('../models/TeamRequest');
+const Feedback = require('../models/Feedback');
+const MentorRequest = require('../models/MentorRequest');
 
 // Register student for an event
 exports.registerForEvent = async (req, res) => {
@@ -280,5 +282,162 @@ exports.getTeammates = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Get mentors with the same domain as the student
+exports.getMentorsByDomain = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const student = await User.findById(studentId);
+
+    const mentors = await User.find({
+      role: 'mentor',
+      domain: student.domain
+    }).select('name domain experience');
+
+    return res.json(mentors);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Send request to a mentor
+exports.sendMentorRequest = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { mentorId, introduction } = req.body;
+
+    if (!mentorId || !introduction) {
+      return res.status(400).json({
+        success: false,
+        message: 'Mentor ID and introduction are required'
+      });
+    }
+
+    if (introduction.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Introduction must be at least 10 characters long'
+      });
+    }
+
+    // Check if already sent request
+    const existingRequest = await MentorRequest.findOne({
+      studentId,
+      mentorId,
+      status: 'pending'
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        success: false,
+        message: 'You already have a pending request with this mentor'
+      });
+    }
+
+    const mentor = await User.findOne({ _id: mentorId, role: 'mentor' });
+    if (!mentor) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid mentor ID'
+      });
+    }
+
+    const request = new MentorRequest({
+      studentId,
+      mentorId,
+      introduction
+    });
+
+    await request.save();
+    return res.json({ success: true, message: 'Mentor request sent successfully' });
+  } catch (error) {
+    console.error('Mentor request error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Server error while sending mentor request'
+    });
+  }
+};
+
+// Get feedback from mentors
+exports.getMentorFeedback = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const feedback = await Feedback.find({ studentId })
+      .populate('mentorId', 'name')
+      .sort({ createdAt: -1 })
+      .lean();  // Convert to plain JS object
+
+    // Format the response to include mentor name
+    const formattedFeedback = feedback.map(fb => ({
+      _id: fb._id,
+      mentorName: fb.mentorId.name,
+      feedback: fb.feedback,
+      studentReply: fb.studentReply,
+      createdAt: fb.createdAt,
+      updatedAt: fb.updatedAt
+    }));
+
+    return res.json(formattedFeedback);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Submit response to mentor's feedback
+exports.submitFeedbackResponse = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { feedbackId, response } = req.body;
+
+    if (!feedbackId || !response) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Feedback ID and response are required' 
+      });
+    }
+
+    const feedback = await Feedback.findById(feedbackId);
+    
+    if (!feedback) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Feedback not found' 
+      });
+    }
+
+    // Verify this feedback was for this student
+    if (feedback.studentId.toString() !== studentId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Not authorized to respond to this feedback' 
+      });
+    }
+
+    feedback.studentReply = response;
+    feedback.updatedAt = new Date();
+    await feedback.save();
+
+    res.json({ 
+      success: true, 
+      message: 'Response submitted successfully',
+      feedback: {
+        _id: feedback._id,
+        feedback: feedback.feedback,
+        studentReply: feedback.studentReply,
+        createdAt: feedback.createdAt,
+        updatedAt: feedback.updatedAt
+      }
+    });
+  } catch (error) {
+    console.error('Error in submitFeedbackResponse:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || 'Server error while submitting response' 
+    });
   }
 };
