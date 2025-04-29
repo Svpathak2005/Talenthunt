@@ -59,10 +59,5 @@
    ```bash
    git clone https://github.com/yourusername/talenthunt.git
    cd talenthunt
- only their is the same for the mentor aslo once requested for the mentor and mentor accept the request you can have a chat with the mentor regarding the update with the help of the feedback system 
-# mentor section : the mentor will be getting the request from the student and their will be a introduction of the student why he want the mentoring and after the mentorship is approved by the it will be added in the mentee of the student and after that the student can have a feedback based on their progress from the mentor and the student can reply to the mentor 
-# admin section :
-# The Admin as the feature as the to see the number of student register for the event and the team formation who are their mentor  
-
 # video presentation for the website :https://drive.google.com/file/d/1DF1_lgB6ecBWEMXpE9AFawxwWW658Ji_/view?usp=sharing
 # ppt presentation for the website : 
