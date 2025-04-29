@@ -1,8 +1,5 @@
 # Talenthunt
 # Tech Stack - MERN Stack 
-# This is a website made for the hacakthon mentoring of the student in this their are three login Admin,Student,Mentor the login are managed using jwt token and the local storage 
-# in the student dashboard the studnet have the feature such as the to find the teammate the teammate are shown by fetching the all the student who have registered in the same domain and same category and then can invite the student for the specific event as the teammate and will added as the teammate for the specific event# TalentHunt
-
 **TalentHunt** is a full-stack web platform designed to streamline the process of mentoring and team formation for hackathon participants. Built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js), it supports three user roles — **Admin**, **Student**, and **Mentor** — each with unique features. The application ensures secure access using **JWT-based authentication** and **local storage** for session management.
 
 # 🚀 Features
