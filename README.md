@@ -1,63 +1,76 @@
-# Talenthunt
-# Tech Stack - MERN Stack 
-**TalentHunt** is a full-stack web platform designed to streamline the process of mentoring and team formation for hackathon participants. Built with the **MERN Stack** (MongoDB, Express.js, React.js, Node.js), it supports three user roles — **Admin**, **Student**, and **Mentor** — each with unique features. The application ensures secure access using **JWT-based authentication** and **local storage** for session management.
+# 🎯 TalentHunt
 
-# 🚀 Features
-
-### 🔐 Authentication
-- JWT-based login system for Admin, Student, and Mentor.
-- Role-based access control with protected routes.
+**TalentHunt** is a full-stack web platform designed to streamline mentoring and team formation for students participating in hackathons. Built using the **MERN Stack** (MongoDB, Express.js, React.js, Node.js), it features role-based dashboards for **Admin**, **Student**, and **Mentor**, with JWT authentication and local storage-based session handling.
 
 ---
 
-### 👩‍🎓 Student Dashboard
-- **Domain & Category Based Matchmaking**: Students are shown a list of other students registered under the same domain and category.
-- **Team Invitation**: Students can invite others to form a team for a specific event. Teams are event-specific.
-- **Mentor Request**: Students can send a request to mentors for guidance.
-- **Chat & Feedback System**: Once mentorship is accepted, students can chat with mentors and receive feedback on their progress.
+## 🔐 Authentication
 
-
-
-# 👨‍🏫 Mentor Dashboard
-- **Mentorship Requests**: Mentors receive requests from students with personalized introductions.
-- **Approve Mentorship**: On approval, the mentor is added as the official mentor for the student for that event.
-- **Mentee List**: Mentors can view their current mentees.
-- **Feedback System**: Mentors can send feedback to mentees, and mentees can respond.
+- Secure login system for Admin, Student, and Mentor using **JWT tokens**.
+- Session handling via **local storage**.
+- Role-based route protection.
 
 ---
 
-### 🛠️ Admin Dashboard
-- **Event Analytics**: View the number of registered students per event.
-- **Team Formation Overview**: Monitor teams formed, their members, and assigned mentors.
-- **Role Management**: Oversee users across all roles.
+## 👩‍🎓 Student Dashboard
+
+- 🔍 **Find Teammates**: Discover other students registered in the same **domain** and **category**.
+- 🤝 **Send Invitations**: Invite students to form a team for a specific event.
+- 🧑‍🏫 **Request Mentorship**: Students can send mentorship requests to available mentors with an introduction.
+- 💬 **Chat & Feedback System**: Once the mentor accepts, students can chat with them and receive or respond to feedback.
+
+---
+
+## 👨‍🏫 Mentor Dashboard
+
+- 📩 **Mentorship Requests**: View mentorship requests along with student introductions.
+- ✅ **Approve Mentorship**: Accept requests to become a student's mentor for a specific event.
+- 👥 **Manage Mentees**: Track and interact with mentees.
+- ✍️ **Feedback System**: Provide progress feedback to students, and view their responses.
+
+---
+
+## 🛠️ Admin Dashboard
+
+- 📊 **View Event Statistics**: Monitor the number of student registrations per event.
+- 👨‍👩‍👧‍👦 **Team Monitoring**: View formed teams and their assigned mentors.
+- 🔑 **User Role Oversight**: Manage roles and registrations across the system.
 
 ---
 
 ## 🧰 Tech Stack
 
-| Technology | Role |
-|------------|------|
-| **MongoDB** | Database |
-| **Express.js** | Backend Framework |
-| **React.js** | Frontend UI |
-| **Node.js** | Server Environment |
-| **JWT** | Authentication |
-| **TailwindCSS + DaisyUI** | UI Components & Styling |
+| Technology        | Purpose                      |
+|------------------|------------------------------|
+| **MongoDB**       | Database                     |
+| **Express.js**    | Backend Framework            |
+| **React.js**      | Frontend UI                  |
+| **Node.js**       | Server Environment           |
+| **JWT**           | Secure Authentication        |
+| **Tailwind CSS**  | Styling                      |
+| **DaisyUI**       | UI Components Framework      |
+
+---
+
+## 📽️ Project Demo
+
+- ▶️ **Video Presentation**: [Watch Here](https://drive.google.com/file/d/1DF1_lgB6ecBWEMXpE9AFawxwWW658Ji_/view?usp=sharing)
+
+- 📊 **PPT Presentation**: _[Link Pending or Upload Here]_
 
 ---
 
 ## 🧑‍💻 Getting Started
 
 ### Prerequisites
-- Node.js and npm
+
+- Node.js & npm
 - MongoDB
 - Git
 
-### Installation
+### Installation Steps
 
-1. **Clone the repository**  
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/yourusername/talenthunt.git
    cd talenthunt
-# video presentation for the website :https://drive.google.com/file/d/1DF1_lgB6ecBWEMXpE9AFawxwWW658Ji_/view?usp=sharing
-# ppt presentation for the website : 
