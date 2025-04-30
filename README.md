@@ -56,7 +56,7 @@
 
 - ▶️ **Video Presentation**: [Watch Here](https://drive.google.com/file/d/1DF1_lgB6ecBWEMXpE9AFawxwWW658Ji_/view?usp=sharing)
 
-- 📊 **PPT Presentation**: _[Link Pending or Upload Here]_
+- 📊 **PPT Presentation**: [Watch Here].(https://drive.google.com/file/d/1u_awgYL_FaCvWWP8xoVLJTQr-N406E3J/view?usp=sharing)_
 
 ---
 
