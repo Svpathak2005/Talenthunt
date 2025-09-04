@@ -124,9 +124,13 @@ const LandingPage = () => {
                 {/* Main Image */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    src="/images/mentorship.jpg"
                     alt="Mentorship" 
                     className="w-full h-auto rounded-3xl"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/fallback-mentorship.jpg";
+                    }}
                   />
                 </div>
 
@@ -179,21 +183,24 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             {[
               {
-                image: "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: "/images/expert-mentors.jpg",
+                fallbackImage: "/images/fallback-mentors.jpg",
                 emoji: "🎓",
                 title: "Expert Mentors",
                 description: "Connect with industry leaders from top companies who provide personalized guidance for your career growth",
                 features: ["One-on-one mentoring sessions", "Industry-specific guidance", "Real-world project experience"]
               },
               {
-                image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: "/images/personalized-growth.jpg",
+                fallbackImage: "/images/fallback-growth.jpg",
                 emoji: "📈",
                 title: "Personalized Growth",
                 description: "Tailored mentorship programs designed to accelerate your learning journey",
                 features: ["Customized learning paths", "Progress tracking", "Skill assessment"]
               },
               {
-                image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                image: "/images/global-network.jpg",
+                fallbackImage: "/images/fallback-network.jpg",
                 emoji: "🌐",
                 title: "Global Network",
                 description: "Join an active community of professionals and peers worldwide",
@@ -206,6 +213,10 @@ const LandingPage = () => {
                     src={feature.image}
                     alt={feature.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = feature.fallbackImage;
+                    }}
                   />
                   <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center">
                     <span className="text-xl">{feature.emoji}</span>
